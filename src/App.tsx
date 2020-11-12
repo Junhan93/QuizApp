@@ -4,8 +4,10 @@ import { fetchQuizQuestions } from './API';
 import QuestionCard from './components/QuestionCard';
 // Types
 import { QuestionState, Difficulty } from './API';
+// Styles
+import { GlobalStyle, Wrapper } from './App.styles';
 
-type AnswerObject = {
+export type AnswerObject = {
   question: string;
   answer: string;
   correct: boolean;
@@ -15,12 +17,12 @@ type AnswerObject = {
 const TOTAL_QUESTIONS = 10;
 
 const App = () => {
-  // create our state here
+  // create our state here to use it later with {}
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<QuestionState[]>([]);
   const [number, setNumber] = useState(0);  // the current number that the user will be on
   const [userAnswers, setUserAnswers] = useState<AnswerObject[]>([]);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(0); 
   const [gameOver, setGameOver] = useState(true);
 
   console.log(fetchQuizQuestions(TOTAL_QUESTIONS, Difficulty.EASY));
@@ -68,17 +70,29 @@ const App = () => {
     }
   };
 
-  const nextQuestion = () => {};
+  const nextQuestion = () => {
+    // Move on to the next question if not the last question
+    const nextQuestion = number + 1;
+
+    if(nextQuestion === TOTAL_QUESTIONS){
+      // if we are at the last question, we set game over to true
+      setGameOver(true);
+    } else {
+      setNumber(nextQuestion);
+    }
+  };
 
   return (
-  <div className="App">
+    <>
+    <GlobalStyle/>
+    <Wrapper>
     <h1>REACT QUIZ</h1>
     {gameOver || userAnswers.length === TOTAL_QUESTIONS ? (
     <button className="start" onClick={startTrivia}>
       Start
     </button> ) : null}
 
-    {!gameOver ? <p className="score">Score:</p> : null}
+    {!gameOver ? <p className="score">Score: {score}</p> : null}
     {loading && <p>Loading Questions...</p>}
     {!loading && !gameOver && (
       // Question card only show when we are not loading and not game over 
@@ -100,8 +114,9 @@ const App = () => {
       Next Question
     </button>
     ) : null}
-    </div>
-  )
-}
+    </Wrapper>
+    </>
+  );
+};
 
 export default App;
